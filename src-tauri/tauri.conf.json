@@ -41,7 +41,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQ2NkYwQUM1QkNBRTk5Q0EKUldUS21hNjh4UXB2MW02NEdZZmxQaklSY0NjNXdLT0hLSVZtZDRtUFRGdHpvSzExYlh3Z0cwUDMK",
       "endpoints": [
-        "https://github.com/NYG-kali-user/sekigae-rs.git/releases/latest/download/latest.json"
+        "https://github.com/NYG-kali-user/sekigae-rs/releases/latest/download/latest.json"
       ],
       "windows": {
         "installMode": "passive"
