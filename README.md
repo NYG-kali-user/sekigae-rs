@@ -1,7 +1,11 @@
-# Tauri + Leptos
+# Sekigae-rs
 
-This template should help get you started developing with Tauri and Leptos.
+This is for shuffling seats of students
 
-## Recommended IDE Setup
+## Usage
 
-[VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer).
+First, select a csv file
+Second, click "実行"
+You are done.
+
+※You can save csv files in your document folder by clicking "今の状態をセーブする"

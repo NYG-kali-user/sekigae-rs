@@ -26,8 +26,8 @@ jobs:
       - name: Build Tauri App (Windows MSI)
         run: cargo tauri build --target x86_64-pc-windows-msvc
         env:
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_KEY_PASSWORD }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_KEY_PASSWORD }}
       - name: Generate Signature
         id: sign
         shell: bash
@@ -37,8 +37,8 @@ jobs:
           echo "msi=$(basename $MSI)" >> $GITHUB_OUTPUT
           echo "sig=$SIG" >> $GITHUB_OUTPUT
         env:
-          TAURI_PRIVATE_KEY: ${{secrets.TAURI_SIGNING_PRIVATE_KEY}}
-          TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{secrets.TAURI_SIGNING_PRIVATE_KEY}}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
