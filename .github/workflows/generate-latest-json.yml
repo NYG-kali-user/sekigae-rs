@@ -1,0 +1,70 @@
+name: Generate latest.json
+
+on:
+  push:
+    tags:
+      - "v.*.*"
+
+jobs:
+  build-release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: actions/setup-rust@v1
+        with:
+          rust-version: stable
+
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli
+
+      - name: Build Tauri App (Windows MSI)
+        run: cargo tauri build --target x86_64-pc-windows-msvc --release
+
+      - name: Restore Signing Key
+        shell: bash
+        run: |
+          echo "${{secrets.TAURI_SIGNING_PRIVATE_KEY}}" | base64 -d > ./private.key
+
+      - name: Generate Signature
+        id: sign
+        shell: bash
+        run: |
+          MSI=$(ls src-tauri/target/release/bundle/msi/*.msi | head -n 1)
+          SIG=$(tauri signer sign --private-key ./private.key --password ${{secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD}} "$MSI")
+          echo "msi=$(basename $MSI)" >> $GITHUB_OUTPUT
+          echo "sig=$SIG" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          files: |
+            ${{ github.ref_name }}.msi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: create latest.json
+        run: |
+          cat > latest.json <<EOF
+          {
+            "version": "${{ github.ref_name }}",
+            "notes": "Automated release",
+            "pub_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "platforms": {
+              "windows-x86_64": {
+                "signature": "${{ steps.sign.outputs.sig }}",
+                "url": "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/${{ steps.sign.outputs.msi }}"
+              }
+            }
+          }
+          EOF
+      - name: Upload latest.json
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: latest.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

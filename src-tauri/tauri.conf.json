@@ -34,6 +34,18 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQ2NkYwQUM1QkNBRTk5Q0EKUldUS21hNjh4UXB2MW02NEdZZmxQaklSY0NjNXdLT0hLSVZtZDRtUFRGdHpvSzExYlh3Z0cwUDMK",
+      "endpoints": [
+        "https://github.com/NYG-kali-user/sekigae-rs.git/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
   }
 }
