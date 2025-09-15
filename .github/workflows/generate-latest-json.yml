@@ -24,14 +24,22 @@ jobs:
         run: cargo install trunk
 
       - name: Build Tauri App (Windows MSI)
-        run: cargo tauri build --target x86_64-pc-windows-msvc
+        run: cargo tauri build
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+      - name: Upload MSI artifact (for debugging)
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-msi
+          path: target/release/bundle/msi/*.msi
+
       - name: Debug Build Artifacts
+        shell: pwsh
         run: |
-          echo "=== Built files under target/release/bundle ==="
-          find target/release/bundle -maxdepth 3 -type f || true
+          Write-Host "=== Built files under target/release/bundle ==="
+          Get-ChildItem -Recurse -Path target/release/bundle | ForEach-Object { $_.FullName }
+
       - name: Generate Signature
         id: sign
         shell: bash
@@ -69,6 +77,7 @@ jobs:
             }
           }
           EOF
+
       - name: Upload latest.json
         uses: softprops/action-gh-release@v1
         with:
