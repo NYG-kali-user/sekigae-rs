@@ -17,6 +17,9 @@ jobs:
           toolchain: stable
           override: true
 
+      - name: Add Target
+        run: rustup target add wasm32-unknown-unknown
+
       - name: Install Tauri CLI
         run: cargo install tauri-cli
 
