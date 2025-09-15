@@ -1,13 +1,13 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 use csv::{Reader, Writer};
 use rand::Rng;
+use shared::{AnnealParam, Grid};
 use std::{
     fs::{File, read_dir},
     path::*,
 };
 use tauri::{AppHandle, Manager, Window};
 use tauri_plugin_dialog::DialogExt;
-type Grid = Vec<Vec<i32>>;
 
 #[tauri::command]
 async fn open_csv_file(window: Window) -> Result<Vec<Vec<f64>>, String> {
@@ -103,14 +103,15 @@ fn cost(grid: &Grid, target: &Vec<i32>) -> i32 {
     sum
 }
 #[tauri::command]
-fn simulated_annealing(
-    grid: Grid,
-    target: Vec<i32>,
-    t0: f64,
-    t_min: f64,
-    alpha: f64,
-    max_iters: usize,
-) -> Vec<Vec<f64>> {
+fn simulated_annealing(param: AnnealParam) -> Vec<Vec<f64>> {
+    let AnnealParam {
+        grid,
+        target,
+        t0,
+        t_min,
+        alpha,
+        max_iters,
+    } = param;
     let mut rng = rand::rng();
 
     let mut current = grid.clone();
@@ -154,6 +155,11 @@ fn simulated_annealing(
         .collect()
 }
 
+#[tauri::command]
+fn exit_app(app: tauri::AppHandle) {
+    app.exit(0);
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -162,7 +168,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             open_csv_file,
             save_csv_file,
-            simulated_annealing
+            simulated_annealing,
+            exit_app,
         ])
         .run(tauri::generate_context!())
         .expect("error while running this app");

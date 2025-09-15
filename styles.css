@@ -110,3 +110,9 @@ button {
     background-color: #0f0f0f69;
   }
 }
+
+#quit-button {
+  margin-top: 2em;
+  color: #ffffff;
+  background-color: red;
+}
