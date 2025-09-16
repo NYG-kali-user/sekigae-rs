@@ -45,7 +45,7 @@ jobs:
         shell: bash
         run: |
           MSI=$(ls target/release/bundle/msi/*.msi | head -n 1)
-          SIG=$(tauri signer sign "$MSI")
+          SIG=$(cargo tauri signer sign "$MSI")
           echo "msi=$(basename $MSI)" >> $GITHUB_OUTPUT
           echo "sig=$SIG" >> $GITHUB_OUTPUT
         env:
