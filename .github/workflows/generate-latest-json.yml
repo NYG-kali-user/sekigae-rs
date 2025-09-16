@@ -40,30 +40,21 @@ jobs:
           Write-Host "=== Built files under target/release/bundle ==="
           Get-ChildItem -Recurse -Path target/release/bundle | ForEach-Object { $_.FullName }
 
-      - name: Generate Signature
-        id: sign
-        shell: bash
-        run: |
-          MSI=$(ls target/release/bundle/msi/*.msi | head -n 1)
-          SIG=$(cargo tauri signer sign "$MSI")
-          echo "msi=$(basename $MSI)" >> $GITHUB_OUTPUT
-          echo "sig=$SIG" >> $GITHUB_OUTPUT
-        env:
-          TAURI_SIGNING_PRIVATE_KEY: ${{secrets.TAURI_SIGNING_PRIVATE_KEY}}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           files: |
-            ${{ github.ref_name }}.msi
+            target/release/bundle/msi/*.msi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create latest.json
+        shell: bash
         run: |
+          MSI=$(ls target/release/bundle/msi/*.msi | head -n 1)
+          SIG=$(cat "$MSI.sig")
           cat > latest.json <<EOF
           {
             "version": "${{ github.ref_name }}",
@@ -71,8 +62,8 @@ jobs:
             "pub_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
             "platforms": {
               "windows-x86_64": {
-                "signature": "${{ steps.sign.outputs.sig }}",
-                "url": "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/${{ steps.sign.outputs.msi }}"
+                "signature": "$SIG",
+                "url": "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/$(basename $MSI)"
               }
             }
           }
